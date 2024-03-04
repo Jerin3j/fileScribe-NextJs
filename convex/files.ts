@@ -78,3 +78,28 @@ export const getFiles = query({
         .collect();
     },
 });
+
+
+export const deleteFile = mutation({
+    args: {
+        fileId: v.id("files"),
+    },
+    async handler(ctx, args) {
+        const identity = await ctx.auth.getUserIdentity();
+        if(!identity){
+            throw new ConvexError("You do not have access to this org");
+        }
+
+        const file = await ctx.db.get(args.fileId);
+        if(!file){
+            throw new ConvexError("This file does not exist");
+        }
+        
+        const hasAccess = await hasAccessToOrg(ctx, identity.tokenIdentifier, file.orgId);
+        if(!hasAccess){
+            throw new ConvexError("You do not have access to this org");
+        }
+
+        await ctx.db.delete(args.fileId);
+    },
+})
