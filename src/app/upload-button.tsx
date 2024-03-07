@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useOrganization, useUser } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { Doc } from "../../convex/_generated/dataModel";
 
 
 const formSchema = z.object({
@@ -65,17 +66,29 @@ export function UploadButton() {
     const postUrl = await generateUploadUrl();
     if(!orgId) return;
 
+    const fileType = values.file[0].type;
+
     const result = await fetch(postUrl, {
       method: "POST",
-      headers: { "Content-Type": values.file[0].type },
+      headers: { "Content-Type": fileType },
       body: values.file[0],
     });
     const { storageId } = await result.json();
+
+    const types = {
+      "image/png" : "image",
+      "image/jpg" : "image",
+      "image/jpeg" : "image",
+      "application/pdf": "pdf",
+      "text/csv": "csv",
+    } as Record<string, Doc<"files">["type"]>;
+
 
     try {
 
       await createFile({
         name: values.title,
+        type: types[fileType],
         fileId: storageId,
         orgId,
       })
