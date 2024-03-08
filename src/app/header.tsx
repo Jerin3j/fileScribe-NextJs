@@ -15,6 +15,11 @@ export default function Header() {
             src={logo} width={50} height={50} alt="logo" />
             <p>File<span className="text-blue-700">Scribe</span></p>
             </Link>
+            <Button variant="outline">
+            <Link href="/dashboard/files">
+             Your Files
+            </Link>
+            </Button>
             <div className="flex gap-16 md:gap-2">
             <OrganizationSwitcher />
             <UserButton />

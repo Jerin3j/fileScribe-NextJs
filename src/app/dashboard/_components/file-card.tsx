@@ -16,7 +16,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { ImageIcon, MoreVertical, StarIcon, TrashIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DownloadIcon, ImageIcon, MoreVertical, StarIcon, TrashIcon, UndoIcon } from "lucide-react";
 import { FaFilePdf, FaFileCsv } from "react-icons/fa6";
 import { FaImage } from "react-icons/fa";
 import { BsFiletypePdf } from "react-icons/bs";
@@ -31,10 +32,11 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-  } from "@/components/ui/alert-dialog"
+  } from "@/components/ui/alert-dialog";
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'  
 import { IoStarSharp } from "react-icons/io5";
 import { ReactNode, useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
@@ -48,6 +50,7 @@ import { Protect } from "@clerk/nextjs";
     file : Doc<"files">; 
     isFavorited: boolean; }) {
     const deleteFile = useMutation(api.files.deleteFile);
+    const restoreFile = useMutation(api.files.restoreFile);
     const toggleFavorite = useMutation(api.files.toggleFavorite);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const { toast } = useToast();
@@ -59,8 +62,7 @@ import { Protect } from "@clerk/nextjs";
             <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your account
-                and remove your data from our servers.
+                This action will mark the file for our deletion process. Files are deleted periodically.
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -71,8 +73,8 @@ import { Protect } from "@clerk/nextjs";
                 })
                 toast({
                     variant: "default",
-                    title: "File deleted!",
-                    description: "Your file has been erased from the system.",
+                    title: "File marked for deletion!",
+                    description: "Your file will be deleted soon.",
                   })
             }}>Continue</AlertDialogAction>
             </AlertDialogFooter>
@@ -97,14 +99,37 @@ import { Protect } from "@clerk/nextjs";
             <StarIcon className="w-4 h-4" /> Unfavorite
             </div>}
             </DropdownMenuItem>
-            {/* <Protect role="org:admin" fallback={<></>}> */}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+            onClick={()=> {
+              window.open(getFileUrl(file.fileId), "_blank");
+            }}
+            className="flex gap-1 items-center cursor-pointer">
+             <DownloadIcon className="w-4 h-4" /> Download
+            </DropdownMenuItem> 
+            <Protect role="org:admin" fallback={<></>}>
             <DropdownMenuSeparator />  
             <DropdownMenuItem
-            onClick={()=> setIsConfirmOpen(true)}
-            className="flex gap-1 text-red-600 items-center cursor-pointer">
-            <TrashIcon className="w-4 h-4" /> Delete
+            onClick={()=> {
+              if(file.shouldDelete){
+                restoreFile({
+                  fileId: file._id,
+                });
+              }else{
+                setIsConfirmOpen(true);
+              }
+              }}
+            className="flex gap-1 items-center cursor-pointer"
+            >
+             {file.shouldDelete ? 
+             <div className="flex gap-1 text-green-600 items-center cursor-pointer">
+             <UndoIcon className="w-4 h-4" /> Restore     
+             </div> : 
+              <div className="flex gap-1 text-red-600 items-center cursor-pointer">
+              <TrashIcon className="w-4 h-4" /> Delete 
+              </div>} 
             </DropdownMenuItem>
-            {/* </Protect> */}
+            </Protect>
         </DropdownMenuContent>
         </DropdownMenu>
         </>
@@ -120,6 +145,10 @@ export default function FileCard({
   favorites } : { 
 file: Doc<"files">; 
 favorites: Doc<"favorites">[]; }) {
+
+  const userProfile = useQuery(api.users.getUserProfiles, {
+    userId: file.userId,
+  });
   
     const typeIcons = {
         "image" : <FaImage />,
@@ -133,7 +162,7 @@ favorites: Doc<"favorites">[]; }) {
   return (
     <Card>
     <CardHeader className="relative">
-      <CardTitle className="flex gap-2">
+      <CardTitle className="flex gap-2 text-base font-normal items-center">
       <p>{typeIcons[file.type]}</p>
         {file.name}
       </CardTitle>
@@ -152,12 +181,17 @@ favorites: Doc<"favorites">[]; }) {
       {file.type === 'csv' && <GrDocumentCsv className="w-20 h-20" />}
       {file.type === 'pdf' && <BsFiletypePdf className="w-20 h-20" />}
     </CardContent>
-    <CardFooter className="flex justify-center">
-      <Button 
-      onClick={()=> {
-        window.open(getFileUrl(file.fileId), "_blank");
-      }}
-      >Download</Button>
+    <CardFooter className="flex justify-between">
+      <div className="flex gap-2 text-xs text-gray-700 w-[70%] items-center">
+      <Avatar className="w-6 h-6">
+      <AvatarImage src={userProfile?.image} />
+      <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+      {userProfile?.name}
+      </div>
+      <div className="text-xs text-gray-800">
+      Uploaded {formatRelative((new Date(file._creationTime)), new Date())}
+      </div>
     </CardFooter>
   </Card>
   
