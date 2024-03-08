@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc } from "../../../../convex/_generated/dataModel";
 
 
 const formSchema = z.object({
