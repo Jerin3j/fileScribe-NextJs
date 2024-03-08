@@ -32,6 +32,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
+import { IoStarSharp } from "react-icons/io5";
 import { ReactNode, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -40,7 +41,11 @@ import Image from "next/image";
   
 
   
-  function FileCardActions ({ file } : { file : Doc<"files"> }) {
+  function FileCardActions ({ 
+    file, 
+    isFavorited } : { 
+    file : Doc<"files">; 
+    isFavorited: boolean; }) {
     const deleteFile = useMutation(api.files.deleteFile);
     const toggleFavorite = useMutation(api.files.toggleFavorite);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -83,7 +88,13 @@ import Image from "next/image";
               })
             }}
             className="flex gap-1 items-center cursor-pointer">
-            <StarIcon className="w-4 h-4" /> Favorite
+            {isFavorited ?
+            <div className="flex gap-1 items-center"> 
+            <IoStarSharp className="w-4 h-4" /> Favorite
+            </div> :
+            <div className="flex gap-1 items-center">
+            <StarIcon className="w-4 h-4" /> Unfavorite
+            </div>}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -101,13 +112,20 @@ function getFileUrl (fileId: Id<"_storage">) : string {
         return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`
 }  
 
-export default function FileCard({ file } : { file: Doc<"files"> }) {
+export default function FileCard({ 
+  file, 
+  favorites } : { 
+file: Doc<"files">; 
+favorites: Doc<"favorites">[]; }) {
   
     const typeIcons = {
         "image" : <FaImage />,
         "pdf": <FaFilePdf />,
         "csv": <FaFileCsv />,
       } as Record<Doc<"files">["type"], ReactNode>;
+          
+      const isFavorited = favorites.some(favorite => favorite.fileId === file._id)
+
 
   return (
     <Card>
@@ -117,7 +135,7 @@ export default function FileCard({ file } : { file: Doc<"files"> }) {
         {file.name}
       </CardTitle>
        <div className="absolute top-2 right-2 outline-none">
-        <FileCardActions file={file} />
+        <FileCardActions isFavorited={isFavorited} file={file} />
        </div>
       {/* <CardDescription>Card Description</CardDescription> */}
     </CardHeader>
