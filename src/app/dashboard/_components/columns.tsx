@@ -33,13 +33,14 @@ export const columns: ColumnDef<Doc<"files" & { isFavorited: boolean }>>[] = [
   {
     header: "User",
     cell: ({ row }) => {
+        //@ts-ignore
         return <UserCell userId={row.original.userId} />
       },
   },
   {
     header: "Uploaded on",
     cell: ({ row }) => {
-        
+        //@ts-ignore
         return <div>{formatRelative((new Date(row.original._creationTime)), new Date())}</div>
       },
   },
@@ -49,6 +50,7 @@ export const columns: ColumnDef<Doc<"files" & { isFavorited: boolean }>>[] = [
         
         return (
             <div>
+                {/* @ts-ignore */}
                 <FileCardActions file={row.original} isFavorited={row.original.isFavorited} />
             </div>
         )
