@@ -40,7 +40,7 @@ export default function SearchBar({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input {...field} />
+                <Input className="md:w-auto w-36" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -12,12 +12,12 @@ export default function SideNav() {
     const pathname = usePathname(); 
 
   return (
-    <div className="w-40 flex flex-col gap-4">
+    <div className="md:w-40 flex flex-col gap-4 w-7">
         <Link href="/dashboard/files">
           <Button variant={"link"} className={clsx("flex gap-2", {
             "text-blue-700" : pathname.includes("/dashboard/files")
           })}>
-           <FileIcon />All Files
+           <FileIcon /><span className="md:block hidden">All Files</span>
           </Button>
         </Link>
 
@@ -25,7 +25,7 @@ export default function SideNav() {
           <Button variant={"link"} className={clsx("flex gap-2", {
             "text-blue-700" : pathname.includes("/dashboard/favorites")
           })}>
-           <StarIcon/>Favorites
+           <StarIcon/><span className="md:block hidden">Favorites</span>
           </Button>
         </Link>
 
@@ -33,7 +33,7 @@ export default function SideNav() {
           <Button variant={"link"} className={clsx("flex gap-2", {
             "text-blue-700" : pathname.includes("/dashboard/trash")
           })}>
-           <TrashIcon/>Trash
+           <TrashIcon/><span className="md:block hidden">Trash</span>
           </Button>
         </Link>
       </div>

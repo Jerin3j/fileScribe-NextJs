@@ -9,9 +9,9 @@ export default function DashboardLayout({
 }>) {
   return (
     <main className="container mx-auto pt-12">
-      <div className="flex gap-8">
+      <div className="flex md:gap-8 gap-2 mb-12 w-full">
           <SideNav />
-       <div className="w-full">
+       <div className="md:w-full w-auto">
           {children}
         </div>  
        </div>  

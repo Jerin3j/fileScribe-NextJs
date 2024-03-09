@@ -5,12 +5,14 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import Header from "./header";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "./footer";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "FileScribe",
-  description: "Your digital haven for seamless file organization and storage",
+  description: "Your digital heaven for seamless file organization and storage",
 };
 
 export default function RootLayout({
@@ -22,10 +24,17 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ConvexClientProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
           <Toaster />
           <Header />
-        {children}
+          {children}
           <Footer />
+          </ThemeProvider>
         </ConvexClientProvider>
         </body>
     </html>

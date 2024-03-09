@@ -36,7 +36,7 @@ file: Doc<"files"> & { isFavorited: boolean }; }) {
           
 
   return (
-    <Card>
+    <Card className="md:w-auto w-[330px]">
     <CardHeader className="relative">
       <CardTitle className="flex gap-2 text-base font-normal items-center">
       <p>{typeIcons[file.type]}</p>
@@ -58,14 +58,14 @@ file: Doc<"files"> & { isFavorited: boolean }; }) {
       {file.type === 'pdf' && <BsFiletypePdf className="w-20 h-20" />}
     </CardContent>
     <CardFooter className="flex justify-between">
-      <div className="flex gap-2 text-xs text-gray-700 w-[70%] items-center">
+      <div className="flex gap-2 text-xs text-teal-600 w-[70%] items-center">
       <Avatar className="w-6 h-6">
       <AvatarImage src={userProfile?.image} />
       <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       {userProfile?.name}
       </div>
-      <div className="text-xs text-gray-800">
+      <div className="text-xs text-teal-600">
       Uploaded {formatRelative((new Date(file._creationTime)), new Date())}
       </div>
     </CardFooter>
