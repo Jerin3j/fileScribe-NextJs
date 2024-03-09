@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <div className="border-b py-4 bg-gray-50">
+    <div className="relative z-10 border-b py-4 bg-gray-50">
       <div className="container mx-auto flex md:flex-row flex-col md:gap-0 gap-5 justify-between items-center">
          <Link href="/" className="flex gap-2 items-center text-2xl font-semibold text-black hover:opacity-75">
             <Image
