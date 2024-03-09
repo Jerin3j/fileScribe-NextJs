@@ -20,7 +20,7 @@ import {
   } from "@/components/ui/alert-dialog";  
 import { IoStarSharp } from "react-icons/io5";
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useToast } from "@/components/ui/use-toast";
 import { Protect } from "@clerk/nextjs";
@@ -37,6 +37,7 @@ import { Protect } from "@clerk/nextjs";
     const toggleFavorite = useMutation(api.files.toggleFavorite);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const { toast } = useToast();
+    const me = useQuery(api.users.getMe);
 
     return (
         <>
@@ -90,7 +91,12 @@ import { Protect } from "@clerk/nextjs";
             className="flex gap-1 items-center cursor-pointer">
              <DownloadIcon className="w-4 h-4" /> Download
             </DropdownMenuItem> 
-            <Protect role="org:admin" fallback={<></>}>
+            <Protect condition={(check)=> {
+              return check({
+                role: "org.admin",
+              }) || file.userId === me?._id;
+            }} 
+            fallback={<></>}>
             <DropdownMenuSeparator />  
             <DropdownMenuItem
             onClick={()=> {
