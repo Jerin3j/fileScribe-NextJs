@@ -64,6 +64,11 @@ export function UploadButton() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
     const postUrl = await generateUploadUrl();
+    console.log("Url", postUrl)
+    console.log("orgId", orgId)
+    console.log("UserId", user.user?.id)
+    console.log("user ;;;", user.user)
+
     if(!orgId) return;
 
     const fileType = values.file[0].type;
@@ -83,9 +88,15 @@ export function UploadButton() {
       "text/csv": "csv",
     } as Record<string, Doc<"files">["type"]>;
 
+    console.group()
+    console.log(values.title)
+    console.log(types[fileType])
+    console.log(storageId)
+    console.log(result)
+    console.groupEnd()
+
 
     try {
-
       await createFile({
         name: values.title,
         type: types[fileType],
@@ -108,6 +119,8 @@ export function UploadButton() {
       })
     }
   }
+
+  
 
   return (
      <Dialog open={isDialogOpen} onOpenChange={(isOpen)=>{

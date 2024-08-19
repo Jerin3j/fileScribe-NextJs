@@ -27,7 +27,7 @@ export default function Header() {
             <ModeToggle />
             </div>
             <div className="flex gap-16 md:gap-2">
-             <OrganizationSwitcher />       
+             <OrganizationSwitcher/>       
             <UserButton />
             <SignedOut>
             <SignInButton>

@@ -77,10 +77,10 @@ import { Protect } from "@clerk/nextjs";
             className="flex gap-1 items-center cursor-pointer">
             {isFavorited ?
             <div className="flex gap-1 items-center"> 
-            <IoStarSharp className="w-4 h-4" /> Favorite
+            <IoStarSharp className="w-4 h-4" /> Unfavorite
             </div> :
             <div className="flex gap-1 items-center">
-            <StarIcon className="w-4 h-4" /> Unfavorite
+            <StarIcon className="w-4 h-4" /> Favorite
             </div>}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -126,5 +126,5 @@ import { Protect } from "@clerk/nextjs";
   }
 
 export function getFileUrl (fileId: Id<"_storage">) : string {
-        return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`
+        return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`;
 }  

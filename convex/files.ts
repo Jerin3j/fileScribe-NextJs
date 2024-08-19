@@ -5,7 +5,7 @@ import { fileTypes } from "./schema";
 import { Doc, Id } from "./_generated/dataModel";
 
 
-export const generateUploadUrl = mutation(async (ctx) => {
+export const generateUploadUrl = mutation(async (ctx ) => {
     const identity = await ctx.auth.getUserIdentity();
 
     if(!identity){
@@ -14,30 +14,38 @@ export const generateUploadUrl = mutation(async (ctx) => {
 
     return await ctx.storage.generateUploadUrl();
   });
+  
+  export const getUrl = mutation(
+     async (ctx) => {
+    //   const messages = await ctx.db.query("files").collect();
+      return  await ctx.storage.getUrl('kg28etfjwwr2y0btxrdjp143m56w9c7k') 
+          
+    })
+  
+  
 
-async function hasAccessToOrg(ctx: QueryCtx | MutationCtx, orgId: string){
-    
+   async function hasAccessToOrg(ctx: QueryCtx | MutationCtx, orgId: any){
     const identity = await ctx.auth.getUserIdentity();
-
     if(!identity){
        return null;     
     }    
-    
-    const user = await ctx.db.query("users").withIndex("by_tokenIdentifier", 
-    q => q.eq("tokenIdentifier", identity.tokenIdentifier)).first();    
-    
+    // const user = await ctx.db.query("users").withIndex("by_tokenIdentifier", 
+    // q => q.eq("tokenIdentifier", identity.tokenIdentifier)).first();   
+
+    const user = await getUser(ctx, identity.tokenIdentifier)
     if(!user){
         return null;
     }
-
-    const hasAccess = 
-    user.orgIds.some(item => item.orgId === orgId) || user.tokenIdentifier.includes(orgId);
-
+    // const hasAccess = user.orgIds.some(item => item.orgId === orgId) || user.tokenIdentifier ===orgId 
+    const hasAccess = user.orgIds.map(item =>(item.orgId === orgId)) || user.tokenIdentifier ===orgId 
     if(!hasAccess){
         return null;
     }
-
-
+    console.log(identity.tokenIdentifier)
+    console.log(user.tokenIdentifier)
+    console.log(user.orgIds)
+    console.log(orgId)
+ 
     return { user };
 }
 
@@ -48,14 +56,14 @@ export const createFile = mutation({
         type: fileTypes,
         fileId: v.id("_storage"),
         orgId: v.string(),
+
     },
     async handler(ctx, args) {
         const hasAccess = await hasAccessToOrg(ctx, args.orgId);
 
         if(!hasAccess){
-           throw new ConvexError("You do not have access to this org");
+            throw new ConvexError("You do not have access to this org");
         }
-
         await ctx.db.insert("files", {
             name: args.name,
             type: args.type,
@@ -69,7 +77,7 @@ export const createFile = mutation({
 
 export const getFiles = query({
     args: {
-      orgId: v.string(),
+        orgId: v.string(),
       type: v.optional(fileTypes),
       query: v.optional(v.string()),
       favorites: v.optional(v.boolean()),
